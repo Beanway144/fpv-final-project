@@ -1,16 +1,16 @@
 namespace zfc
-
+/------------------------------------__ZFC__------------------------------------/
+/-The type Set and its member relation are introduced with no inherent meaning.-/
 constant Set : Type
---Checks if s is an element of t
 constant mem : Set → Set → Prop
 
-/- Convenience Notions -/
-infix ` ∈ ` : 90 := mem
+  /- - - - Convenience Notations- - - -/
+  infix ` ∈ ` : 90 := mem
 
--- We call `a` a subset of `A` if for every set `x ∈ a`, we have `x ∈ A`.
-def is_subset : Set → Set → Prop :=
-  λ a A, (∀(x : Set), x ∈ a → x ∈ A)
-infix ` ⊂ ` : 90 := is_subset
+  --We call `a` a subset of `A` if for every set `x ∈ a`, we have `x ∈ A`.
+  def is_subset : Set → Set → Prop :=
+    λ a A, (∀(x : Set), x ∈ a → x ∈ A)
+  infix ` ⊂ ` : 90 := is_subset
   
 
 /-----------------------------------Axioms---------------------------------------/
