@@ -12,8 +12,8 @@ namespace LoVe
    a bijective function `f` from `x` to `y`.-/
 def cardinality_eq : Set → Set → Prop :=
   (λ(x y : Set), ∃(f : Set → Set),
-    (∀a b, a ∈ x ∧ b ∈ x ∧ (a ≠ b → f(a) ≠ f(b)))          -- injection
-    ∧ (∀c, c ∈ y ∧ ∃d, d ∈ x ∧ f(d) = c)                   -- surjection
+    (∀a b, a ∈ x ∧ b ∈ x → (a ≠ b → f(a) ≠ f(b)))          -- injection
+    ∧ (∀c, c ∈ y → ∃d, d ∈ x ∧ f(d) = c)                   -- surjection
   )
 infix ` ≃ ` : 110 := cardinality_eq
 
@@ -22,9 +22,9 @@ infix ` ≃ ` : 110 := cardinality_eq
 Let `f` be a bijection from `X` to `P(X)`. Let `Y = {x ∈ X : ¬x ∈ f(x)}`.
 Let `z ∈ X` be such that `f(z) = Y`. Then `z ∈ Y ↔ ¬z ∈ Y`. Contradiction!
 -/
-theorem Cantor : ∀(X : Set), ¬(X ≃ P(X)) :=
+theorem Cantor : ∀(X: Set), ¬(X ≃ P(X)) :=
   begin
-    intros X,
+    intro X,
     intro p,
     rw cardinality_eq at p,
 
@@ -53,7 +53,21 @@ theorem Cantor : ∀(X : Set), ¬(X ≃ P(X)) :=
           begin
             have hp := classical.some_spec p,
             have f_is_surj := and.elim_right hp Y,
-            apply and.elim_right f_is_surj,
+            have Y_in_PX : Y ∈ P(X) :=
+              begin
+                have Y_subset_X : Y ⊂ X :=
+                  begin
+                    rw is_subset,
+                    intros x x_in_Y,
+                    have j := iff.elim_left (hY x),
+                    apply and.elim_left (j x_in_Y),
+                  end,
+                rw [P, power_set_of],
+                simp,
+                have hPX := iff.elim_right (classical.some_spec (power_set X) Y),
+                apply hPX Y_subset_X,
+              end,
+            apply f_is_surj Y_in_PX,
           end,
         let a := classical.some exists_z,
         have hzCL := iff.elim_right (hzC a),

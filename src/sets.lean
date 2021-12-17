@@ -55,7 +55,7 @@ prefix `∪` : 110 := union_of
 --__Axiom of Power Set__
 -- For any set `s` there exists a set `t` that contains exactly all the subsets of `s`
 -- (called the power set of `s`).
-axiom power_set : ∀(s : Set), ∃(t : Set), ∀(e : Set), e ∈ t → e ⊂ s 
+axiom power_set : ∀(s : Set), ∃(t : Set), ∀(e : Set), e ∈ t ↔ e ⊂ s 
 
 noncomputable def power_set_of : Set → Set := 
   λ(s : Set), classical.some (power_set s)
