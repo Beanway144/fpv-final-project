@@ -48,7 +48,8 @@ meta def list_axioms : tactic unit :=
   Empty Set      - `zfc.empty_set`
   Union          - `zfc.union`
   Power Set      - `zfc.power_set`
-  Infinity       - `zfc.replacement`
+  Infinity       - `zfc.infinity`
+  Replacemnt     - `zfc.replacement`
   Regularity     - `zfc.regularity`
   Choice         - `zfc.choice`"
 
@@ -62,19 +63,44 @@ meta def explain_axioms : tactic unit :=
   <><>Pairing<><>
   Given two sets, there exists a set with only those two sets as elements.
 
-  <><>Separation<><> TODO i should probably finish this or delete since its useless idk idk
+  <><>Separation<><>
+  Given some proposition P, we can separate some set into a subset whose elements all satisfy P.
+
+  <><>Empty Set<><>
+  There exists a set that has no elements.
+
+  <><>Union<><>
+  For any set X, there exists a set whole elements are all elements of elements of X. 
+
+  <><>Power Set<><>
+  For any set X, there exists a set P(X) that is the collection of all subsets of X. 
+
+  <><>Infinity<><>
+  There exists a set that can be built inductively, starting with the empty set and adding the union of elements of the set to the set.
+
+  <><>Replacement<><>
+  If F is a function on the set X, then the image F(X) is also a set.
+
+  <><>Regularity<><>
+  Every set has a minimal element with respect to ∈ (sets can't contain themselves).
+
+  <><>Choice<><>
+  For any nonempty set, there exists a function that returns an element of that set. 
   "
 
-
--- lemma example1 : ∀(s x: Set) (φ : Set → Set), x ∈ s ∧ ∃!(y : Set), φ(x) = y →
---   ∃(t : Set), ∀(z : Set), z ∈ t ↔ φ(x) = z :=
+/-__Examples__-/
+-- lemma example1 : (∀(s : Set), ∃(t : Set), ∀(sel sel_el tel: Set), 
+--   sel ∈ s → sel_el ∈ sel → tel ∈ t ↔ sel_el = tel) ∧ (∀(s: Set) (φ : Set → Set),
+--    (∀(x y a : Set), x ∈ s ∧ φ(x) = y → φ(x) = a ↔ a = y) → ∃(t : Set), ∀(z x: Set),
+--     x ∈ s → z ∈ t ↔ φ(x) = z) :=
 --   begin
---     by_axiom,
+--     split,
+--     repeat {by_axiom},
 --   end
 
 -- lemma example2 : true :=
 --   begin
 --     list_axioms,
---     by_axiom,
+--     by_axiom, --fails
 --   end
 end zfc

@@ -11,38 +11,43 @@ namespace LoVe
 /- Two sets `x` and `y` have the same cardinality if there exists
    a bijective function `f` from `x` to `y`.-/
 def cardinality_eq : Set → Set → Prop :=
-  -- (λ(x y : Set), ∃(f : Set → Set), f(x) = y →
-  --   (∀(a : Set), f(x) = a ↔ a = y) ∧ (∀(b : Set), f(b) = y ↔ x = b))
   (λ(x y : Set), ∃(f : Set → Set),
     (∀a b, a ∈ x ∧ b ∈ x ∧ (a ≠ b → f(a) ≠ f(b)))          -- injection
     ∧ (∀c, c ∈ y ∧ ∃d, d ∈ x ∧ f(d) = c)                   -- surjection
   )
 infix ` ≃ ` : 110 := cardinality_eq
 
-/- _Cantor's Theorem_: X ≢ P(X) ; A set does not have the same cardinality as its power set. -/
+/- _Cantor's Theorem_: X ≢ P(X) : A set does not have the same cardinality as its power set. -/
 /-Argument Structure:
-Let `f` be a function from `X` to `P(X)`. Let `Y = {x ∈ X : ¬x ∈ f(x)}`. Let `I` be the
-compliment of `Y`. Let `z ∈ X` be such that `f(z) = Y`. Then `z ∈ Y ↔ ¬z ∈ Y`.
+Let `f` be a bijection from `X` to `P(X)`. Let `Y = {x ∈ X : ¬x ∈ f(x)}`.
+Let `z ∈ X` be such that `f(z) = Y`. Then `z ∈ Y ↔ ¬z ∈ Y`. Contradiction!
 -/
 theorem Cantor : ∀(X : Set), ¬(X ≃ P(X)) :=
   begin
     intros X,
     intro p,
     rw cardinality_eq at p,
-    let f : Set → Set := classical.some p,                        -- have f be some function from x -> P(X)
-    have pY := (separation (λx, ¬x ∈ f(x)) X),
-    let Y : Set := classical.some pY,                             -- have Y be a the set of all x ∈ X not
-    have hY := classical.some_spec pY,                             -- in the image of f
 
+    /-Have `f` be some bijection from `X` to `P(X)`.-/
+    let f : Set → Set := classical.some p,
+
+    /-Have `Y = {x ∈ X : ¬x ∈ f(x)}`.-/
+    have pY := (separation (λx, ¬x ∈ f(x)) X),
+    let Y : Set := classical.some pY,
+    have hY := classical.some_spec pY,
+
+    /-Have `I = {x ∈ X : x ∈ f(x)}`.-/
     have pI := (separation (λx, x ∈ f(x)) X),
-    let I : Set := classical.some pI,                             -- have I be the image of f
+    let I : Set := classical.some pI,
     have hI := classical.some_spec pI,
 
-    have pzC := (separation (λx, f(x) = Y) X),                     -- the class where z (the only element) resides
+    /-Let `zC` be the class of sets that contain all sets `z` such that `f(z) = Y`.
+      (zC really only contains one element.)-/
+    have pzC := (separation (λx, f(x) = Y) X),
     let zC : Set := classical.some pzC,
     have hzC := classical.some_spec pzC,
 
-    have thing : ∃z, z ∈ zC :=
+    have zC_nonempty : ∃z, z ∈ zC :=
       begin
         have exists_z : ∃x, x ∈ X ∧ f(x) = Y :=
           begin
@@ -60,8 +65,10 @@ theorem Cantor : ∀(X : Set), ¬(X ≃ P(X)) :=
         apply exists.intro a,
         assumption,
       end,
-    let z := classical.some thing,
-    have hz := classical.some_spec thing,
+
+    /-Have `z` be some (the) element of `zC`.-/
+    let z := classical.some zC_nonempty,
+    have hz := classical.some_spec zC_nonempty,
 
     have z_in_zC : z ∈ zC := by apply hz,
 
@@ -72,14 +79,17 @@ theorem Cantor : ∀(X : Set), ¬(X ≃ P(X)) :=
       end,
 
     simp at *,
+
+    /- We can show that __z ∈ Y ↔ ¬z ∈ Y__. -/
     have hziy : z ∈ Y ↔ ¬z ∈ Y,
     {
       apply iff.intro,
-        -- z ∈ Y → ¬z ∈ Y
-      { -- I want to show: since z ∈ Y, ¬z ∈ I. but, f(z) = Y, so z ∈ I ...--but, f(z) = Y, so z ∈ I
-        intro ziy, -- "since z ∈ Y"
+      {
+        /- Forward Direction: z ∈ Y → ¬z ∈ Y
+        If z ∈ Y, then ¬z ∈ I. But, f(z) = Y, so z ∈ I. Contradiction, thus ¬z ∈ Y. -/
+        intro ziy,
         intro ziy2,
-        have z_not_in_I : ¬z ∈ I, -- "¬z ∈ I."
+        have z_not_in_I : ¬z ∈ I,
         {
           intro z_in_I,
           have z_in_fz : z ∈ f(z) :=
@@ -111,6 +121,8 @@ theorem Cantor : ∀(X : Set), ¬(X ≃ P(X)) :=
         contradiction,
       },
       {
+        /-Backward Direction: ¬z ∈ Y → z ∈ Y
+        If ¬z ∈ Y, then z ∈ f(z). But f(z) = Y, so z ∈ Y.-/
         intro not_z_in_Y,
         have z_in_fz : z ∈ f(z) :=
           begin
@@ -132,6 +144,8 @@ theorem Cantor : ∀(X : Set), ¬(X ≃ P(X)) :=
         contradiction,
       },
     },
+    /-Uh-oh! We have that z ∈ Y ↔ ¬z ∈ Y. We can break into cases, and say that if
+      z ∈ Y, then we have a contradiction, and if ¬z ∈ Y, we also have a contradiction.-/
     have uhoh : z ∈ Y ∨ ¬z ∈ Y := by apply classical.em,
     apply or.cases_on uhoh,
     {
@@ -153,6 +167,5 @@ theorem Cantor : ∀(X : Set), ¬(X ≃ P(X)) :=
       contradiction
     },
   end
-
 end LoVe
 end zfc

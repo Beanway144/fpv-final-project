@@ -78,6 +78,7 @@ axiom regularity : ∀(s : Set), ∃(x : Set), x ∈ s →
   ∃(y : Set), y ∈ s ∧ ¬(∃(z : Set), z ∈ y ∧ z ∈ s)
 
 --__Axiom of Choice__
-axiom choice : ∀(s : Set), ¬(empty ∈ s) → (∃(f : Set → Set),
+-- For any nonempty set X, there exists a ("choice") function from X that returns some element of X. 
+axiom choice : ∀(s : Set), ¬(empty = s) → (∃(f : Set → Set),
   ∀(x : Set), x ∈ s ↔ f(x) ∈ x)
 end zfc
