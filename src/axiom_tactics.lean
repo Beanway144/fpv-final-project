@@ -70,7 +70,7 @@ meta def explain_axioms : tactic unit :=
   There exists a set that has no elements.
 
   <><>Union<><>
-  For any set X, there exists a set whole elements are all elements of elements of X. 
+  For any set X, there exists a set whose elements are all elements of elements of X. 
 
   <><>Power Set<><>
   For any set X, there exists a set P(X) that is the collection of all subsets of X. 
@@ -82,7 +82,7 @@ meta def explain_axioms : tactic unit :=
   If F is a function on the set X, then the image F(X) is also a set.
 
   <><>Regularity<><>
-  Every set has a minimal element with respect to ∈ (sets can't contain themselves).
+  Every set has a minimal element with respect to ∈ (a set X can't contain itself, nor contain elements that contain X, etc.).
 
   <><>Choice<><>
   For any nonempty set, there exists a function that returns an element of that set. 
@@ -100,6 +100,7 @@ meta def explain_axioms : tactic unit :=
 
 -- lemma example2 : true :=
 --   begin
+--     explain_axioms,
 --     list_axioms,
 --     by_axiom, --fails
 --   end
